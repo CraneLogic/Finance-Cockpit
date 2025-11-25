@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "rootDirectory": "finance_cockpit",
+  "rootDirectory": "finance_cockpit (1)",
   "framework": "vite",
   "installCommand": "npm install",
   "buildCommand": "npm run build",
