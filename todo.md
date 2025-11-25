@@ -103,3 +103,30 @@
 - [x] Add tests for Dashboard with Daily Brief
 - [x] Add tests for Alerts page
 - [x] Add tests for Recommendations page
+
+## Vercel Deployment Restructuring
+
+### Project Structure
+- [x] Move client/index.html to root index.html
+- [x] Move client/src to root src
+- [x] Update all import paths to reflect new structure
+- [x] Remove server/ directory (not needed for static frontend)
+- [x] Remove shared/ directory (not needed for static frontend)
+
+### Build Configuration
+- [x] Simplify package.json scripts (dev, build, preview)
+- [x] Remove @builder.io/vite-plugin-jsx-loc plugin
+- [x] Remove custom esbuild step from build script
+- [x] Simplify vite.config to standard Vite + React setup
+- [x] Remove vite-plugin-manus-runtime if causing issues
+
+### Environment Variables
+- [x] Verify all env vars use VITE_ prefix
+- [x] Update .env.example with all required variables
+- [x] Document env vars in README
+
+### Testing
+- [x] Test npm install locally
+- [x] Test npm run build locally
+- [x] Verify all features still work after restructuring
+- [x] Verify dist/ output is correct for static hosting

@@ -1,6 +1,6 @@
 # Finance Cockpit
 
-A read-only operational dashboard for EzyCrane Pty Ltd that connects to the CraneLedger API to display real-time financial data, KPIs, bookings, and reports.
+A read-only operational dashboard for EzyCrane Pty Ltd that connects to CraneLedger and AI-CFO APIs to display real-time financial data, alerts, and recommendations.
 
 ## Overview
 
@@ -72,50 +72,67 @@ Finance Cockpit is a web application built for the CraneLogic group to provide C
 
 ## Tech Stack
 
-- **Frontend Framework**: React 19 + TypeScript
+- **Frontend Framework**: React 18 + TypeScript
+- **Build Tool**: Vite 7
 - **Routing**: Wouter
 - **Styling**: Tailwind CSS 4
-- **UI Components**: shadcn/ui
-- **Build Tool**: Vite
+- **UI Components**: shadcn/ui (Radix UI)
+- **HTTP Client**: Axios
 - **API Clients**: 
   - Custom fetch-based client for CraneLedger
   - Custom fetch-based client for AI-CFO
+
+## Project Structure
+
+```
+finance_cockpit/
+├── index.html              # Entry point
+├── src/                    # Source code
+│   ├── main.tsx           # React entry point
+│   ├── App.tsx            # Routes and top-level layout
+│   ├── config.ts          # API configuration
+│   ├── const.ts           # App constants
+│   ├── index.css          # Global styles
+│   ├── components/        # Reusable UI components
+│   │   ├── ui/           # shadcn/ui components
+│   │   ├── DashboardLayout.tsx
+│   │   └── ErrorBoundary.tsx
+│   ├── contexts/          # React contexts
+│   │   ├── AuthContext.tsx
+│   │   └── ThemeContext.tsx
+│   ├── lib/               # Utilities and API clients
+│   │   ├── craneLedgerClient.ts
+│   │   ├── aiCfoClient.ts
+│   │   ├── types.ts
+│   │   ├── aiCfoTypes.ts
+│   │   └── utils.ts
+│   └── pages/             # Page components
+│       ├── Login.tsx
+│       ├── Dashboard.tsx
+│       ├── Bookings.tsx
+│       ├── BookingDetail.tsx
+│       ├── Alerts.tsx
+│       ├── Recommendations.tsx
+│       └── Reports.tsx
+├── public/                 # Static assets
+├── dist/                   # Build output
+├── package.json
+├── vite.config.ts
+└── tsconfig.json
+```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 22.x or higher
-- pnpm (or npm/yarn)
+- Node.js 18+ and npm
 
 ### Installation
 
-1. Clone the repository
-2. Install dependencies:
+Install dependencies:
 
 ```bash
-pnpm install
-```
-
-3. Configure environment variables:
-
-Copy the example environment file and update the values:
-
-```bash
-cp .env.local.example .env.local
-```
-
-Edit `.env.local` with your configuration:
-
-```env
-# CraneLedger API Base URL
-VITE_CRANE_LEDGER_BASE_URL=https://your-craneledger-instance.com
-
-# EzyCrane Entity ID in CraneLedger
-VITE_EZYCRANE_ENTITY_ID=your-entity-id-here
-
-# AI-CFO API Base URL
-VITE_AI_CFO_BASE_URL=http://localhost:4000
+npm install
 ```
 
 ### Running the Application
@@ -123,7 +140,7 @@ VITE_AI_CFO_BASE_URL=http://localhost:4000
 Start the development server:
 
 ```bash
-pnpm dev
+npm run dev
 ```
 
 The application will be available at `http://localhost:3000`
@@ -133,41 +150,90 @@ The application will be available at `http://localhost:3000`
 Build the application:
 
 ```bash
-pnpm build
+npm run build
 ```
+
+The build output will be in the `dist/` directory.
 
 Preview the production build:
 
 ```bash
-pnpm preview
+npm run preview
 ```
 
-## Project Structure
+## Deploying to Vercel
 
+This project is configured as a standard Vite + React app for easy deployment to Vercel.
+
+### Quick Deploy
+
+1. **Push to GitHub**
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin <your-repo-url>
+   git push -u origin main
+   ```
+
+2. **Import to Vercel**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "Import Project"
+   - Select your GitHub repository
+   - Vercel will auto-detect the Vite configuration
+
+3. **Configure Environment Variables**
+   
+   In Vercel project settings → Environment Variables, add:
+   
+   - `VITE_CRANE_LEDGER_BASE_URL` - Your CraneLedger API URL
+   - `VITE_EZYCRANE_ENTITY_ID` - Your EzyCrane entity ID
+   - `VITE_AI_CFO_BASE_URL` - Your AI-CFO API URL
+   
+   Then click "Deploy"!
+
+### Build Configuration
+
+Vercel will automatically use:
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Install Command**: `npm install`
+
+No additional configuration needed!
+
+### Manual Deployment
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+
+# Deploy to production
+vercel --prod
 ```
-client/
-  src/
-    components/
-      DashboardLayout.tsx    # Main layout with navigation
-      ui/                    # shadcn/ui components
-    contexts/
-      AuthContext.tsx        # Authentication state management
-      ThemeContext.tsx       # Theme management
-    lib/
-      craneLedgerClient.ts   # CraneLedger API client
-      aiCfoClient.ts         # AI-CFO API client
-      types.ts               # CraneLedger type definitions
-      aiCfoTypes.ts          # AI-CFO type definitions
-    pages/
-      Login.tsx              # Login page
-      Dashboard.tsx          # Dashboard with KPIs and AI-CFO brief
-      Bookings.tsx           # Bookings table
-      BookingDetail.tsx      # Individual booking details
-      Alerts.tsx             # AI-CFO alerts
-      Recommendations.tsx    # AI-CFO recommendations
-      Reports.tsx            # Financial reports
-    config.ts                # Application configuration
-    App.tsx                  # Main app with routing
+
+## Environment Variables
+
+All environment variables must be prefixed with `VITE_` to be accessible in the client-side code:
+
+### Required for CraneLedger Integration
+- `VITE_CRANE_LEDGER_BASE_URL` - Base URL for CraneLedger API (e.g., `https://api.craneledger.com`)
+- `VITE_EZYCRANE_ENTITY_ID` - Your EzyCrane entity ID in CraneLedger
+
+### Required for AI-CFO Integration
+- `VITE_AI_CFO_BASE_URL` - Base URL for AI-CFO API (e.g., `https://api.ai-cfo.com`)
+
+### Optional Configuration
+- `VITE_APP_TITLE` - Application title (default: "Finance Cockpit")
+- `VITE_APP_LOGO` - Application logo URL
+
+Example configuration:
+```env
+VITE_CRANE_LEDGER_BASE_URL=https://craneledger.production.com
+VITE_AI_CFO_BASE_URL=https://ai-cfo.production.com
+VITE_EZYCRANE_ENTITY_ID=94ea44d8-c8ca-43b2-8a78-8eabb5639618
 ```
 
 ## API Integration
@@ -183,7 +249,7 @@ The app connects to CraneLedger (core ledger microservice) using the following e
 - `GET /bookings?entityId=...` - List bookings with filters
 - `GET /bookings/:id` - Get booking details
 
-The API client is located in `client/src/lib/craneLedgerClient.ts` and provides typed methods for all endpoints.
+The API client is located in `src/lib/craneLedgerClient.ts` and provides typed methods for all endpoints.
 
 ### AI-CFO API
 
@@ -197,33 +263,30 @@ The app connects to AI-CFO (analytics and recommendations service) using the fol
 - `POST /recommendations/:id/approve` - Approve a recommendation
 - `POST /recommendations/:id/reject` - Reject a recommendation
 
-The API client is located in `client/src/lib/aiCfoClient.ts` and provides typed methods for all endpoints.
+The API client is located in `src/lib/aiCfoClient.ts` and provides typed methods for all endpoints.
 
 **Graceful Degradation**: If AI-CFO is unavailable, the app will display a warning but continue to function with CraneLedger data.
 
-## Configuration
+## Development
 
-### Environment Variables
+### Scripts
 
-All environment variables must be prefixed with `VITE_` to be accessible in the client-side code:
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run check` - Type check with TypeScript
+- `npm run format` - Format code with Prettier
+- `npm run test` - Run tests
+- `npm run test:watch` - Run tests in watch mode
 
-- `VITE_CRANE_LEDGER_BASE_URL` - Base URL for the CraneLedger API (default: development instance)
-- `VITE_EZYCRANE_ENTITY_ID` - Entity ID for EzyCrane in CraneLedger
-- `VITE_AI_CFO_BASE_URL` - Base URL for the AI-CFO API (default: http://localhost:4000)
+### Code Structure
 
-### Changing API Endpoints
-
-To point to different API instances:
-
-1. Update `VITE_CRANE_LEDGER_BASE_URL` and/or `VITE_AI_CFO_BASE_URL` in `.env.local`
-2. Restart the development server
-
-Example `.env.local`:
-```env
-VITE_CRANE_LEDGER_BASE_URL=https://craneledger.production.com
-VITE_AI_CFO_BASE_URL=https://ai-cfo.production.com
-VITE_EZYCRANE_ENTITY_ID=94ea44d8-c8ca-43b2-8a78-8eabb5639618
-```
+- Keep components small and focused
+- Use TypeScript for type safety
+- Follow React best practices
+- Use shadcn/ui components for consistency
+- Implement proper error handling
+- Add loading states for all API calls
 
 ## Authentication
 
@@ -237,7 +300,7 @@ The current implementation uses a simple localStorage-based authentication syste
 
 ## Read-Only Mode
 
-This application is currently read-only and does not perform any write operations to CraneLedger. All data is fetched and displayed without modification.
+This application is currently read-only and does not perform any write operations to CraneLedger (except for AI-CFO recommendation approvals which trigger journal entries). All data is fetched and displayed without modification.
 
 ## Future Enhancements
 
@@ -250,7 +313,7 @@ Potential features for future versions:
 - User management and role-based access
 - Notifications and alerts
 - Comparison views (period over period)
-- Write operations (with proper authentication and authorization)
+- More write operations (with proper authentication and authorization)
 
 ## License
 
